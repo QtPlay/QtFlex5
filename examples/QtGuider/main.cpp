@@ -1,7 +1,7 @@
 #include "QtGuider.h"
 #include "QtFlexStyle.h"
 #include <time.h>
-#include <QtWidgets/QApplication>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {

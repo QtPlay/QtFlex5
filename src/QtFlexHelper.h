@@ -1,5 +1,5 @@
-#ifndef QT_FLEXHELPER_H
-#define QT_FLEXHELPER_H
+
+#pragma once
 
 #include "QtFlexManager.h"
 
@@ -44,4 +44,3 @@ private:
     QScopedPointer<FlexHelperImpl> impl;
 };
 
-#endif

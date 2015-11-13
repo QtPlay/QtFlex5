@@ -466,6 +466,14 @@ BOOL FlexHelperImplWin::modifyStyle(HWND hwnd, DWORD rsStyle, DWORD asStyle, UIN
 
 #endif
 
+#ifdef Q_OS_LINUX
+class FlexHelperImplXCB : public FlexHelperImpl
+{
+
+};
+
+#endif
+
 #ifdef Q_OS_MAC
 
 class FlexHandler : public QWidgetResizeHandler
@@ -685,7 +693,8 @@ bool FlexHelperImplMac::eventFilter(QObject* obj, QEvent* evt)
 #endif
 
 #ifdef Q_OS_WIN
-FlexHelper::FlexHelper(QWidget* parent) : QObject(parent), impl(new FlexHelperImplWin)
+FlexHelper::FlexHelper(QWidget* parent)
+	: QObject(parent), impl(new FlexHelperImplWin)
 {
     auto d = static_cast<FlexHelperImplWin*>(impl.data());
     d->_buttons = new FlexButtons(parent, parent);
@@ -712,6 +721,33 @@ FlexHelper::FlexHelper(QWidget* parent) : QObject(parent), impl(new FlexHelperIm
     connect(d->_buttons->_maxButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
     connect(d->_buttons->_minButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
     parent->installEventFilter(this);
+}
+#endif
+
+#ifdef Q_OS_LINUX
+FlexHelper::FlexHelper(QWidget* parent)
+	: QObject(parent)
+{
+	if (QGuiApplication::platformName() == "xcb")
+	{
+		impl.reset(new FlexHelperImplXCB);
+
+		auto d = static_cast<FlexHelperImplXCB*>(impl.data());
+
+//		d->_handler = new FlexHandler(parent, parent);
+//		d->_buttons = new FlexButtons(parent, parent);
+//		d->_extents = new FlexExtents(parent, parent);
+// 		connect(d->_extents->_dockPullButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
+// 		connect(d->_extents->_autoHideButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
+// 		connect(d->_buttons->_clsButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
+// 		connect(d->_buttons->_maxButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
+// 		connect(d->_buttons->_minButton, SIGNAL(clicked()), SLOT(on_button_clicked()));
+		parent->installEventFilter(this);
+	}
+	else if (QGuiApplication::platformName() == "wayland")
+	{
+
+	}
 }
 #endif
 
@@ -824,7 +860,7 @@ bool FlexHelper::eventFilter(QObject* obj, QEvent* evt)
             QMetaObject::invokeMethod(obj, "moving", Q_ARG(QObject*, obj));
         }
     }
-#ifndef Q_OS_WIN
+#ifdef Q_OS_WIN
     else
     {
         return d->eventFilter(obj, evt);
@@ -841,7 +877,7 @@ LRESULT WINAPI FlexHelperImplWin::keyEvent(int nCode, WPARAM wParam, LPARAM lPar
     {
         return CallNextHookEx(FlexHelperImplWin::_hook, nCode, wParam, lParam);
     }
- 
+
     if (wParam == VK_CONTROL && DockGuider::instance())
     {
         if (GetAsyncKeyState(VK_CONTROL) & 0x8000)

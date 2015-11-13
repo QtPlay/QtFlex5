@@ -10,7 +10,7 @@
 #include <QtWidgets/QDesktopWidget>
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QPushButton>
-#include "ui_qtguider.h"
+#include "ui_QtGuider.h"
 
 QtCentral::QtCentral(QWidget* parent) : QWidget(parent)
 {
@@ -113,7 +113,7 @@ QtGuider::QtGuider(QWidget *parent, Qt::WindowFlags flags) : QMainWindow(parent,
     impl->ui.setupUi(this);
 
     setCentralWidget(new QtCentral(this));
-    
+
     auto docker1 = new QDockWidget("Docker1", this);
     docker1->setWidget(new QWidget(this));
     auto docker2 = new QDockWidget("Docker2", this);

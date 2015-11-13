@@ -1,6 +1,10 @@
 
 #pragma once
 
+#include <qt_windows.h>
+
+#include <qpa/qplatformnativeinterface.h>
+
 #include "FlexHelperImpl.hpp"
 
 typedef struct _MARGINS
